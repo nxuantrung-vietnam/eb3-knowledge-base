@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EB3 Unskilled Knowledge Base</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .search-container {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        .categories {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .category {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .category:hover { transform: translateY(-5px); }
+        
+        .category-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .category-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .category-content.active {
+            padding: 20px;
+            max-height: 2000px;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: #667eea;
+            cursor: pointer;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+        }
+        
+        .faq-question:hover { color: #764ba2; }
+        
+        .faq-answer {
+            display: none;
+            padding: 15px 0 0 20px;
+            border-left: 3px solid #667eea;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .faq-answer.show { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .info-box {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .info-box.success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .info-box.warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        
+        .info-box.danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .timeline-template {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-line;
+            margin: 15px 0;
+        }
+        
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .resource-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .resource-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header, .search-container, .category { margin-bottom: 15px; }
+            .category-header { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 EB3 Unskilled Knowledge Base</h1>
+            <p>Kho kiến thức toàn diện về quy trình EB3 Unskilled - Cập nhật liên tục</p>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="🔍 Tìm kiếm thông tin... (VD: PERM, I-140, timeline, lừa đảo)" oninput="searchContent(this.value)">
+        </div>
+        
+        <div class="categories" id="categoriesContainer">
+            <!-- Category 1: Khái niệm cơ bản -->
+            <div class="category" data-keywords="eb3 unskilled priority date perm i140 visa bulletin">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <h3>🎯 Khái Niệm Cơ Bản EB3 Unskilled</h3>
+                    <p>Hiểu rõ các thuật ngữ và quy trình quan trọng</p>
+                </div>
+                <div class="category-content">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">EB3 Unskilled (Other Workers) là gì?</div>
+                        <div class="faq-answer">
+                            EB3 Unskilled là danh mục visa định cư Mỹ dành cho những công việc không yêu cầu bằng cấp đại học hoặc kinh nghiệm chuyên môn cao. Đây là con đường hợp pháp để có được Green Card thông qua việc làm, dù thời gian chờ đợi thường rất lâu (8-15 năm tùy quốc gia). Công việc phải là full-time, permanent position và nhà tuyển dụng phải chứng minh không tìm được người Mỹ phù hợp.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Priority Date (PD) là gì và tại sao quan trọng?</div>
+                        <div class="faq-answer">
+                            Priority Date (PD) là ngày PERM được nộp lên DOL (Department of Labor). Đây là ngày quan trọng nhất quyết định thứ tự xử lý hồ sơ của bạn. PD sẽ theo bạn suốt quá trình và được dùng để đối chiếu với Visa Bulletin hàng tháng để biết khi nào được nộp I-485 hoặc DS-260. PD không thay đổi dù bạn có đổi việc (sau khi I-140 approved 180 ngày).
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Quy trình EB3 Unskilled gồm những bước nào?</div>
+                        <div class="faq-answer">
+                            <div class="info-box success">
+                                <strong>5 Bước chính:</strong><br>
+                                1. <strong>Tìm nhà tuyển dụng sponsor</strong> (6-12 tháng)<br>
+                                2. <strong>PERM Labor Certification</strong> (12-24 tháng)<br>
+                                3. <strong>I-140 Immigrant Petition</strong> (4-15 tháng)<br>
+                                4. <strong>Chờ Priority Date Current</strong> (8-15 năm)<br>
+                                5. <strong>Adjust Status (I-485) hoặc Consular Processing</strong> (8-18 tháng)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">PERM là gì và tại sao bị audit?</div>
+                        <div class="faq-answer">
+                            PERM (Program Electronic Review Management) là quy trình chứng minh việc làm. Nhà tuyển dụng phải chứng minh với DOL rằng không tìm được người Mỹ phù hợp cho vị trí này. Quá trình bao gồm: đăng tuyển công khai, phỏng vấn ứng viên Mỹ, và giải thích tại sao từ chối họ. 
+                            
+                            <div class="info-box warning">
+                                <strong>Audit thường xảy ra khi:</strong><br>
+                                • Job requirements quá cụ thể (tailored cho một người)<br>
+                                • Lương thấp hơn prevailing wage<br>
+                                • Thiếu documentation về recruitment process<br>
+                                • Company profile không match với job offered
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Visa Bulletin hoạt động như thế nào?</div>
+                        <div class="faq-answer">
+                            Visa Bulletin được State Department công bố hàng tháng, cho biết PD nào đang được xử lý. Có 2 bảng quan trọng:
+                            
+                            <div class="info-box success">
+                                <strong>Final Action Date:</strong> PD có thể nhận Green Card/Visa<br>
+                                <strong>Dates for Filing:</strong> PD có thể nộp I-485/DS-260
+                            </div>
+                            
+                            EB3 Other Workers thường chậm nhất và hay bị retrogression (lùi PD) do số lượng visa hạn chế (chỉ khoảng 5,000 visa/năm cho toàn thế giới).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 2: Timeline và Checklist -->
+            <div class="category" data-keywords="timeline checklist documents perm i140 nvc interview">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <h3>📋 Timeline Chi Tiết & Checklist</h3>
+                    <p>Các mốc quan trọng và tài liệu cần thiết</p>
+                </div>
+                <div class="category-content">
+                    <div class="info-box success">
+                        <h4>✅ Timeline Thực Tế (Ước tính)</h4>
+                        <strong>Bước 1: Tìm Sponsor (6-12 tháng)</strong><br>
+                        • Tìm nhà tuyển dụng có license và khả năng tài chính<br>
+                        • Negotiate job offer và sponsor agreement<br>
+                        • Chuẩn bị job description phù hợp với EB3 unskilled<br><br>
+
+                        <strong>Bước 2: PERM Process (12-24 tháng)</strong><br>
+                        • PWD (Prevailing Wage Determination): 6-8 tháng<br>
+                        • Recruitment (đăng tuyển, phỏng vấn): 2-3 tháng<br>
+                        • File PERM: 8-15 tháng processing<br>
+                        • Nếu audit: thêm 12-18 tháng<br><br>
+
+                        <strong>Bước 3: I-140 (4-15 tháng)</strong><br>
+                        • Regular processing: 8-15 tháng<br>
+                        • Premium processing: 15 ngày ($2,805)<br>
+                        • RFE response: 1-3 tháng<br><br>
+
+                        <strong>Bước 4: Chờ PD Current (8-15 năm)</strong><br>
+                        • Vietnam: ~12-15 năm từ PD<br>
+                        • India: ~15+ năm từ PD<br>
+                        • China: ~10-12 năm từ PD<br>
+                        • ROW: ~8-10 năm từ PD<br><br>
+
+                        <strong>Bước 5: Final Step (8-18 tháng)</strong><br>
+                        • I-485 (AOS): 8-24 tháng<br>
+                        • CP (Consular Processing): 12-18 tháng
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Checklist tài liệu PERM Stage</div>
+                        <div class="faq-answer">
+                            <div class="info-box warning">
+                                <strong>📋 PERM Documents Checklist:</strong><br>
+                                ✅ Job offer letter với job description chi tiết<br>
+                                ✅ Company tax returns (3 năm gần nhất)<br>
+                                ✅ Audited financial statements<br>
+                                ✅ Prevailing Wage Determination (PWD)<br>
+                                ✅ Recruitment documentation:<br>
+                                &nbsp;&nbsp;&nbsp;• Job postings (newspaper, website, job boards)<br>
+                                &nbsp;&nbsp;&nbsp;• Interview notes và rejection reasons<br>
+                                &nbsp;&nbsp;&nbsp;• Resumes received từ US workers<br>
+                                ✅ Employee resume và credentials<br>
+                                ✅ Employer's business license và registration
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Checklist tài liệu I-140 Stage</div>
+                        <div class="faq-answer">
+                            <div class="info-box warning">
+                                <strong>📋 I-140 Documents Checklist:</strong><br>
+                                ✅ Approved PERM (ETA-9089)<br>
+                                ✅ I-140 form với filing fee ($700)<br>
+                                ✅ Company's ability to pay evidence:<br>
+                                &nbsp;&nbsp;&nbsp;• Tax returns<br>
+                                &nbsp;&nbsp;&nbsp;• Audited financial statements<br>
+                                &nbsp;&nbsp;&nbsp;• Bank statements<br>
+                                ✅ Employee qualifications:<br>
+                                &nbsp;&nbsp;&nbsp;• Education certificates<br>
+                                &nbsp;&nbsp;&nbsp;• Work experience letters<br>
+                                &nbsp;&nbsp;&nbsp;• Training certificates<br>
+                                ✅ Job offer letter (current)<br>
+                                ✅ Premium processing fee ($2,805) nếu chọn Premium
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Checklist tài liệu NVC/Consular Processing</div>
+                        <div class="faq-answer">
+                            <div class="info-box warning">
+                                <strong>📋 NVC/CP Documents Checklist:</strong><br>
+                                ✅ DS-260 Online Application<br>
+                                ✅ Civil Documents:<br>
+                                &nbsp;&nbsp;&nbsp;• Birth certificate (gốc + certified translation)<br>
+                                &nbsp;&nbsp;&nbsp;• Marriage certificate (nếu có)<br>
+                                &nbsp;&nbsp;&nbsp;• Divorce decree (nếu có)<br>
+                                &nbsp;&nbsp;&nbsp;• Police certificates (từ 16 tuổi, mọi nơi sống >6 tháng)<br>
+                                ✅ Financial Documents:<br>
+                                &nbsp;&nbsp;&nbsp;• I-864 Affidavit of Support<br>
+                                &nbsp;&nbsp;&nbsp;• Sponsor's tax returns (3 năm)<br>
+                                &nbsp;&nbsp;&nbsp;• Employment verification letter<br>
+                                ✅ Medical Examination (Panel Physician)<br>
+                                ✅ Passport photos (2x2 inches, specs theo yêu cầu)<br>
+                                ✅ Passport valid ít nhất 6 tháng
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 3: Template Timeline -->
+            <div class="category" data-keywords="template timeline format share">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <h3>📝 Template Timeline Chuẩn</h3>
+                    <p>Mẫu chia sẻ timeline để đồng nhất format</p>
+                </div>
+                <div class="category-content">
+                    <h4>📊 Mẫu Timeline EB3 Unskilled</h4>
+                    <p>Copy template dưới đây và điền thông tin của bạn:</p>
+                    
+                    <div class="timeline-template">🎯 <strong>[Nickname]</strong> - <strong>[Country]</strong> - <strong>[Job Category]</strong>
+
+📅 <strong>Priority Date (PD):</strong> MM/DD/YYYY
+🏢 <strong>Employer Location:</strong> [State] - [Industry]
+🛤️ <strong>Route:</strong> [CP/AOS]
+
+📋 <strong>PERM Timeline:</strong>
+• PWD Filed: MM/DD/YYYY
+• PWD Approved: MM/DD/YYYY  
+• Recruitment Period: MM/DD/YYYY - MM/DD/YYYY
+• PERM Filed: MM/DD/YYYY
+• PERM Approved: MM/DD/YYYY
+• Audit: [Yes/No - duration if yes]
+
+📝 <strong>I-140 Timeline:</strong>
+• Filed: MM/DD/YYYY
+• Processing Type: [Premium/Regular]
+• RFE Received: [MM/DD/YYYY if applicable]
+• RFE Response: [MM/DD/YYYY if applicable]  
+• Approved: MM/DD/YYYY
+
+🏛️ <strong>Current Status:</strong>
+• Waiting for PD to be current
+• Latest Visa Bulletin: [Current PD being processed for your country]
+• Estimated wait time: [X years Y months]
+
+📝 <strong>Notes:</strong>
+• [Any special circumstances, delays, tips, etc.]
+
+⏰ <strong>Total Journey:</strong> [X] năm [Y] tháng từ PD đến hiện tại</div>
+
+                    <div class="info-box danger">
+                        <h4>🚨 Lưu Ý Bảo Mật Khi Chia Sẻ</h4>
+                        <strong>KHÔNG chia sẻ:</strong><br>
+                        ❌ Tên công ty cụ thể (chỉ nói state/industry)<br>
+                        ❌ Số case, receipt number, A#<br>
+                        ❌ Tên thật, địa chỉ nhà<br>
+                        ❌ Số điện thoại, email cá nhân<br>
+                        ❌ Chi tiết lương bổng<br><br>
+                        
+                        <strong>NÊN chia sẻ:</strong><br>
+                        ✅ Timeline các mốc quan trọng<br>
+                        ✅ Kinh nghiệm về RFE, audit<br>
+                        ✅ Tips chuẩn bị phỏng vấn<br>
+                        ✅ Lessons learned<br>
+                        ✅ Nguồn thông tin hữu ích
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Ví dụ Timeline hoàn chỉnh</div>
+                        <div class="faq-answer">
+                            <div class="timeline-template">🎯 <strong>EB3_VN_2020</strong> - <strong>Vietnam</strong> - <strong>Meat Processing</strong>
+
+📅 <strong>Priority Date (PD):</strong> 03/15/2020
+🏢 <strong>Employer Location:</strong> Texas - Food Manufacturing
+🛤️ <strong>Route:</strong> CP
+
+📋 <strong>PERM Timeline:</strong>
+• PWD Filed: 01/10/2020
+• PWD Approved: 08/15/2020  
+• Recruitment Period: 09/01/2020 - 11/30/2020
+• PERM Filed: 03/15/2020 (PD)
+• PERM Approved: 06/10/2021
+• Audit: Yes - 8 months (thiếu recruitment docs)
+
+📝 <strong>I-140 Timeline:</strong>
+• Filed: 07/01/2021
+• Processing Type: Premium
+• RFE Received: N/A
+• RFE Response: N/A  
+• Approved: 07/16/2021
+
+🏛️ <strong>Current Status:</strong>
+• Waiting for PD to be current
+• Latest Visa Bulletin: Vietnam EB3 at Jan 2015
+• Estimated wait time: 8-10 more years
+
+📝 <strong>Notes:</strong>
+• PERM audit vì thiếu newspaper ads documentation
+• I-140 Premium worth it để yên tâm
+• Đã hoàn tất DS-260 và civil documents
+• Đang theo dõi Visa Bulletin hàng tháng
+
+⏰ <strong>Total Journey:</strong> 5 năm 2 tháng từ PD đến hiện tại</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 4: Cảnh báo lừa đảo -->
+            <div class="category" data-keywords="scam fraud fake job sponsor lawyer">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <h3>🚨 Cảnh Báo Lừa Đảo</h3>
+                    <p>Nhận biết và tránh các hình thức lừa đảo phổ biến</p>
+                </div>
+                <div class="category-content">
+                    <div class="info-box danger">
+                        <h4>🚨 Red Flags - Dấu Hiệu Lừa Đảo</h4>
+                        
+                        <strong>Job Sponsor Scams:</strong><br>
+                        ❌ Yêu cầu đặt cọc hoặc "processing fee" trước<br>
+                        ❌ Hứa hẹn "đậu 100%" hoặc "nhanh hơn bình thường"<br>
+                        ❌ Không có địa chỉ văn phòng thật hoặc website chính thức<br>
+                        ❌ Job description không realistic cho EB3 unskilled<br>
+                        ❌ Lương quá cao so với market rate<br>
+                        ❌ Không cho phép visit workplace trước khi ký<br><br>
+
+                        <strong>Legal Service Scams:</strong><br>
+                        ❌ Không có license luật sư hoặc không registered với bar<br>
+                        ❌ Cam kết timeline cụ thể ("6 tháng có Green Card")<br>
+                        ❌ Yêu cầu thanh toán toàn bộ phí trước<br>
+                        ❌ Không cung cấp retainer agreement rõ ràng<br>
+                        ❌ Tránh trả lời câu hỏi về credentials<br>
+                        ❌ Chỉ liên lạc qua WhatsApp/Telegram<br><br>
+
+                        <strong>Document Fraud:</strong><br>
+                        ❌ Bán fake work experience letters<br>
+                        ❌ Fake education credentials<br>
+                        ❌ Fake company documents để làm PERM<br>
+                        ❌ Sử dụng stolen company information
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Cách verify tính hợp pháp của sponsor/lawyer</div>
+                        <div class="faq-answer">
+                            <div class="info-box success">
+                                <h4>✅ Checklist Verification</h4>
+                                
+                                <strong>Verify Luật Sư:</strong><br>
+                                • Check trên State Bar Association website<br>
+                                • Tìm license number và disciplinary history<br>
+                                • Google tên luật sư + "complaint" hoặc "scam"<br>
+                                • Yêu cầu xem office thực tế, không chỉ P.O. Box<br><br>
+
+                                <strong>Verify Company Sponsor:</strong><br>
+                                • Check Secretary of State business registration<br>
+                                • Verify EIN number và business license<br>
+                                • Google company name + address<br>
+                                • Check Better Business Bureau rating<br>
+                                • Visit workplace nếu có thể<br><br>
+
+                                <strong>Verify Job Posting:</strong><br>
+                                • Job phải được post publicly theo PERM requirements<br>
+                                • Check trên company website, job boards<br>
+                                • Requirements phải reasonable cho EB3 unskilled<br>
+                                • Salary phải match với prevailing wage
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">Nếu đã bị lừa đảo thì làm gì?</div>
+                        <div class="faq-answer">
+                            <div class="info-box warning">
+                                <h4>⚠️ Các Bước Xử Lý Khi Bị Lừa</h4>
+                                
+                                <strong>Immediate Actions:</strong><br>
+                                1. Stop all payments và communication<br>
+                                2. Document tất cả evidence (emails, contracts, receipts)<br>
+                                3. Screenshot conversations trước khi họ delete<br>
+                                4. Report lên authorities ngay lập tức<br><br>
+
+                                <strong>Where to Report:</strong><br>
+                                • <strong>State Bar Association</strong> (nếu là luật sư giả)<br>
+                                • <strong>FTC Consumer Complaint</strong>: consumer.ftc.gov<br>
+                                • <strong>FBI IC3</strong>: ic3.gov (internet crime)<br>
+                                • <strong>Local Police</strong> (nếu mất tiền đáng kể)<br>
+                                • <strong>USCIS Fraud Hotline:</strong> 1-866-347-2423<br><br>
+
+                                <strong>Protect Yourself:</strong><br>
+                                • Change passwords nếu đã share personal info<br>
+                                • Monitor credit reports<br>
+                                • Warn community để tránh nạn nhân khác<br>
+                                • Consult với luật sư thật về legal options
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 5: Nguồn thông tin chính thức -->
+            <div class="category" data-keywords="official sources uscis nvc visa bulletin government">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <h3>🔗 Nguồn Thông Tin Chính Thức</h3>
+                    <p>Links đáng tin cậy và được cập nhật thường xuyên</p>
+                </div>
+                <div class="category-content">
+                    <div class="resource-grid">
+                        <a href="https://www.uscis.gov" class="resource-item" target="_blank">
+                            <strong>🏛️ USCIS Official</strong><br>
+                            Forms, processing times, policy updates, case status
+                        </a>
+                        <a href="https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin.html" class="resource-item" target="_blank">
+                            <strong>📅 Visa Bulletin</strong><br>
+                            Monthly priority date updates, filing dates
+                        </a>
+                        <a href="https://www.dol.gov/agencies/eta/foreign-labor" class="resource-item" target="_blank">
+                            <strong>🏢 Department of Labor</strong><br>
+                            PERM processing, prevailing wages, labor certification
+                        </a>
+                        <a href="https://egov.uscis.gov/processing-times/" class="resource-item" target="_blank">
+                            <strong>⏱️ Processing Times</strong><br>
+                            Current USCIS processing times by service center
+                        </a>
+                        <a href="https://travel.state.gov/content/travel/en/us-visas/immigrate/national-visa-center.html" class="resource-item" target="_blank">
+                            <strong>🏛️ National Visa Center</strong><br>
+                            NVC procedures, case status, document requirements
+                        </a>
+                        <a href="https://www.uscis.gov/tools/reports-and-studies/h-1b-employer-data-hub" class="resource-item" target="_blank">
+                            <strong>📊 H-1B Employer Data</strong><br>
+                            Verify employer petition history và credibility
+                        </a>
+                    </div>
+
+                    <div class="info-box success">
+                        <h4>✅ Trusted Community Resources</h4>
+                        <strong>Timeline Tracking:</strong><br>
+                        • Trackitt.com - Community timeline database<br>
+                        • VisaJourney.com - Immigration forum và guides<br>
+                        • Immihelp.com - Immigration information resource<br><br>
+
+                        <strong>Legal Resources:</strong><br>
+                        • AILA.org - Immigration lawyer directory<br>
+                        • Martindale-Hubbell - Lawyer ratings và reviews<br>
+                        • State Bar Association websites<br><br>
+
+                        <strong>Case Status Tools:</strong><br>
+                        • USCIS Case Status Online<br>
+                        • NVC Case Status<br>
+                        • CEAC (for DS-260 status)
+                    </div>
+
+                    <div class="info-box warning">
+                        <h4>⚠️ Information Safety Guidelines</h4>
+                        <strong>Verify Information:</strong><br>
+                        ✅ Chỉ tin tưởng .gov websites cho official info<br>
+                        ✅ Cross-check từ multiple reliable sources<br>
+                        ✅ Kiểm tra publication date (info có thể outdated)<br>
+                        ✅ Consult luật sư cho major decisions<br><br>
+
+                        <strong>Avoid:</strong><br>
+                        ❌ Blog cá nhân không có credentials<br>
+                        ❌ Facebook groups với misinformation<br>
+                        ❌ YouTube channels không có expertise<br>
+                        ❌ WhatsApp forwards và rumors<br><br>
+
+                        <strong>Red Flag Sources:</strong><br>
+                        ❌ Websites yêu cầu payment để access "insider info"<br>
+                        ❌ "Guaranteed success" claims<br>
+                        ❌ Outdated information (>2 years old)<br>
+                        ❌ Anonymous sources với no credentials
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCategory(header) {
+            const content = header.nextElementSibling;
+            const allContents = document.querySelectorAll('.category-content');
+            
+            // Close others
+            allContents.forEach(c => {
+                if (c !== content) c.classList.remove('active');
+            });
+            
+            // Toggle current
+            content.classList.toggle('active');
+        }
+
+        function toggleAnswer(question) {
+            const answer = question.nextElementSibling;
+            const category = question.closest('.category-content');
+            const allAnswers = category.querySelectorAll('.faq-answer');
+            
+            // Close others in same category
+            allAnswers.forEach(a => {
+                if (a !== answer) a.classList.remove('show');
+            });
+            
+            // Toggle current
+            answer.classList.toggle('show');
+        }
+
+        function searchContent(query) {
+            const categories = document.querySelectorAll('.category');
+            const term = query.toLowerCase().trim();
+
+            if (!term) {
+                categories.forEach(cat => {
+                    cat.style.display = 'block';
+                    cat.querySelector('.category-content').classList.remove('active');
+                });
+                return;
+            }
+
+            categories.forEach(category => {
+                const keywords = category.dataset.keywords || '';
+                const text = category.textContent.toLowerCase();
+                const hasMatch = keywords.includes(term) || text.includes(term);
+                
+                if (hasMatch) {
+                    category.style.display = 'block';
+                    category.querySelector('.category-content').classList.add('active');
+                    
+                    // Highlight matching FAQ items
+                    const faqItems = category.querySelectorAll('.faq-item');
+                    faqItems.forEach(item => {
+                        const itemText = item.textContent.toLowerCase();
+                        if (itemText.includes(term)) {
+                            item.style.background = '#fff3cd';
+                            const answer = item.querySelector('.faq-answer');
+                            if (answer) answer.classList.add('show');
+                        } else {
+                            item.style.background = '';
+                        }
+                    });
+                } else {
+                    category.style.display = 'none';
+                }
+            });
+        }
+
+        // Auto-expand first category on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstCategory = document.querySelector('.category-content');
+            if (firstCategory) firstCategory.classList.add('active');
+        });
+    </script>
+</body>
+</html>
